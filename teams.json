@@ -1,0 +1,10 @@
+{
+  "teams": [
+    {
+      "title": "Team 1 title",
+      "members": [ member_1_id, member_1_id, ...],
+      "score": 0
+    },
+    ...
+  ]
+}
