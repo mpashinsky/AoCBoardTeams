@@ -4,6 +4,9 @@
 *   SET YOUR LEADERBOARD PARAMETERS HERE     *
 *********************************************/
 
+//Your timezone "Europe/Moscow"
+$show_timezone = "ENTER_TIMEZONE";
+
 // The year of the AoC challenge
 $event_year = "ENTER_EVENT_YEAR_HERE";
 
