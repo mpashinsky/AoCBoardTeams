@@ -1,3 +1,8 @@
+# This is fork from https://github.com/meithan/AoCBoard with teams support
+
+You can fill teams.json with aoc id's of team members and get team leaderboard.
+Team total score calculated as average of team members scores.
+
 # AoCBoard - an Advent of Code private leaderboard viewer
 
 ![alt text](https://github.com/meithan/AoCBoard/blob/master/screenshot.png "Screenshot")
