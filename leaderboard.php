@@ -275,12 +275,55 @@
 
   if (!empty($data)) { ?>
 
-    <h4>Advent of Code <?= $event_year ?> &mdash; Private leaderboard #<?= $board_id ?></h4>
-
     <?php
 
+    class Team
+    {
+        public $title;
+        public $members;
+        public $score;
+
+        public function getMembersAsString($dataArray) {
+            $membersString = '';
+
+            foreach ($this->members as $memberId) {
+                if (isset($dataArray['members'][$memberId])) {
+                    $membersString .= "{$dataArray['members'][$memberId]['name']} "."[{$dataArray['members'][$memberId]['id']}]<br>\n";
+                }
+            }
+
+            return $membersString;
+        }
+    }
     # Initialize players
     $players = [];
+    $teamsData = json_decode(file_get_contents('teams.json'), true);
+    $teams = array();
+
+    foreach ($teamsData['teams'] as $teamData) {
+        $team = new Team();
+        $team->title = $teamData['title'];
+        $team->members = $teamData['members'];
+        $team->score = $teamData['score'];
+
+        $teams[] = $team;
+    }
+
+    foreach ($teams as $team) {
+        $totalScore = 0;
+        $memberCount = count($team->members);
+
+        foreach ($team->members as $memberId) {
+            if (isset($data['members'][$memberId])) {
+                $totalScore += $data['members'][$memberId]['local_score'];
+            }
+        }
+        $team->score = ($memberCount > 0) ? $totalScore / $memberCount : 0;
+    }
+    usort($teams, function ($a, $b) {
+        return $b->score - $a->score;
+    });
+
     foreach ($data["members"] as $player) {
       $player["num_gold"] = 0;
       $player["num_silver"] = 0;
@@ -372,23 +415,46 @@
     $medal_bronze_img = '<img src="medal_bronze.png"/>';
 
     ?>
+    <h4>Advent of Code <?= $event_year ?> &mdash; Private team leaderboard</h4>
 
     <table id="main-table">
 
-      <tr>
-        <th><strong>#</strong></th>
-        <th class="left-align"><strong>Name</strong></th>
-        <th><strong>score</strong></th>
-        <th><span class="star-big star-gold">*</span></th>
-        <th><?= $medals_tot_img ?></th>
-        <th><?= $medal_gold_img ?></th>
-        <th><?= $medal_silver_img ?></th>
-        <th><?= $medal_bronze_img ?></th>
-        <!--<th><strong>GScore</strong></th>-->
-        <?php for ($day = 1; $day <= 25; $day++) { ?>
-          <th colspan="2"><?= $day ?></th>
+        <tr>
+            <th><strong>#</strong></th>
+            <th class="left-align"><strong>Team Name</strong></th>
+            <th class="left-align"><strong>Team Members</strong></th>
+            <th><strong>Score</strong></th>
+        </tr>
+
+        <?php for ($i = 0; $i < count($teams); $i++) { ?>
+            <tr>
+                <td><?= $i+1 ?></td>
+                <td class="left-align"><?= $teams[$i]->title ?></td>
+                <td><?= $teams[$i]->getMembersAsString($data) ?></td>
+                <td><?= $teams[$i]->score ?></td>
+            </tr>
         <?php } ?>
-      </tr>
+
+    </table>
+
+    <h4>Advent of Code <?= $event_year ?> &mdash; Private leaderboard #<?= $board_id ?></h4>
+
+    <table id="main-table">
+
+        <tr>
+            <th><strong>#</strong></th>
+            <th class="left-align"><strong>Name</strong></th>
+            <th><strong>Score</strong></th>
+            <th><span class="star-big star-gold">*</span></th>
+            <th><?= $medals_tot_img ?></th>
+            <th><?= $medal_gold_img ?></th>
+            <th><?= $medal_silver_img ?></th>
+            <th><?= $medal_bronze_img ?></th>
+            <!--<th><strong>GScore</strong></th>-->
+            <?php for ($day = 1; $day <= 25; $day++) { ?>
+                <th colspan="2"><?= $day ?></th>
+            <?php } ?>
+        </tr>
 
       <?php for ($i = 0; $i < count($players); $i++) { ?>
         <tr>
